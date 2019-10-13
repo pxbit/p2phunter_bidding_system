@@ -1,0 +1,7 @@
+spring:
+  application.name: dev
+  profiles.active: default 
+  cloud:
+    config:
+      uri: http://you_config_server:8888
+      fail-fast: true

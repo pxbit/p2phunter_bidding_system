@@ -1,0 +1,32 @@
+#!/bin/bash
+set -x
+
+jarfile=sniper-0.9.jar
+cp build/libs/$jarfile ~
+
+function dep_local() {
+    cp build/libs/$jarfile ~/client/
+    cd ~/client && stopSniper
+    sleep 10
+    rj $jarfile && cd -
+    sleep 5
+    lsof -i :4570
+    sleep 5
+    lsof -i :4570
+}
+
+# $1: server
+function dep_remote() {
+    theServer=$1
+    scp build/libs/$jarfile $theServer:
+    ssh $theServer "mv ~/$jarfile ~/client/"
+    ssh $theServer "cd ~/client && stopSniper"
+    sleep 10
+    ssh $theServer "cd ~/client && rj $jarfile"
+    sleep 5
+    ssh $theServer "lsof -i :4570"
+    sleep 5
+    ssh $theServer "lsof -i :4570"
+}
+
+dep_local

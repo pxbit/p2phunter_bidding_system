@@ -1,0 +1,102 @@
+buildscript {
+    ext.kotlin_version = "1.3.0"
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+group "cfig"
+version "1.0"
+
+apply plugin: "kotlin"
+
+repositories {
+    jcenter()
+}
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.dorongold.plugins:task-tree:1.3"
+  }
+}
+
+apply plugin: "com.dorongold.task-tree"
+
+dependencies {
+    compile("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+    compile("com.rabbitmq:amqp-client:5.4.1")
+    compile("org.slf4j:slf4j-api:1.7.25")
+    compile("org.slf4j:slf4j-simple:1.7.25")
+    compile("com.squareup.okhttp3:okhttp:3.10.0")
+    compile("com.fasterxml.jackson.core:jackson-annotations:2.9.4")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.9.4")
+    compile("org.mariadb.jdbc:mariadb-java-client:2.2.3") //jdbc
+    testCompile "junit:junit:4.12"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+//jar {
+//    doFirst {
+//        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+//    }
+//    baseName = "j"
+//
+//    manifest {
+//        attributes "Main-Class": "cfig.rabbit.DigClientLauncherKt"
+//    }
+//}
+
+task s(type: Jar, dependsOn: classes) {
+    doFirst {
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    }
+
+    baseName = "Server"
+    manifest {
+        attributes "Main-Class": "cfig.rabbit.DigMasterLauncherKt"
+    }
+    with jar
+}
+
+task c(type: Jar, dependsOn: [classes, compileKotlin]) {
+    doFirst {
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    }
+
+    baseName = "Client"
+    manifest {
+        attributes "Main-Class": "cfig.rabbit.DigWorkerLauncherKt"
+    }
+    with jar
+}
+
+task t() {
+    doLast {
+        //sourceSets.main.compileClasspath.each { println it }
+        sourceSets.main.runtimeClasspath.each { println it }
+        //sourceSets.main.output
+    }
+}

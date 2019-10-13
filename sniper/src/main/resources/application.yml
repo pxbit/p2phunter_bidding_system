@@ -1,0 +1,31 @@
+logging:
+    file: logs/sniper.log
+    level:
+        org.hibernate.SQL: INFO
+
+spring.datasource:
+    testWhileIdle: true
+    validationQuery: SELECT 1
+    # mysql
+    #url: jdbc:mariadb://127.0.0.1:3306/sniperkt?useSSL=false
+    url: jdbc:mariadb://mdb_host:3306/sniperkt?useSSL=false
+    username: your_db_name
+    password: your_db_password
+    driverClassName: org.mariadb.jdbc.Driver
+    hikari.max-lifetime: 600000
+
+
+spring.jpa:
+    show-sql: false
+    hibernate.ddl-auto: update
+    #hibernate.ddl-auto: create
+    # w/o this, @Column() will be converted
+    hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    hibernate.naming.implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    # w/o this, @Column() will be converted
+
+spring.main:
+    banner-mode: log
+    allow-bean-definition-overriding: true
+
+server.port: 4580
